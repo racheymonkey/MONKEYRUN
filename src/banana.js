@@ -6,6 +6,9 @@ export class BananaManager {
         this.lanePositions = [-3, 0, 3];
         this.bananas = [];
 
+        this.eatSound = new Audio('./assets/banana-eat.mp3');
+        this.eatSound.volume = 0.8;
+
         // Start generating bananas
         setInterval(() => this.spawnBanana(), 1500);
     }
@@ -28,9 +31,11 @@ export class BananaManager {
         this.bananas.forEach((banana, index) => {
             banana.position.z += 0.2;
 
-            // Check collision
             const distance = banana.position.distanceTo(monkey.mesh.position);
             if (distance < 0.6) {
+                this.eatSound.currentTime = 0;
+                this.eatSound.play();
+
                 this.scene.remove(banana);
                 this.bananas.splice(index, 1);
                 score.value++;

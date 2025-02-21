@@ -5,9 +5,20 @@ import { BananaManager } from './banana.js';
 import { ObstacleManager } from './obstacles.js';
 
 let scene, camera, renderer, monkey, bananas, obstacles, score, gameRunning;
+let backgroundMusic;
 
 function init() {
     scene = new THREE.Scene();
+
+    backgroundMusic = new Audio('./assets/monkey-run-background.mp3');
+    backgroundMusic.loop = true;  // Loop music indefinitely
+    backgroundMusic.volume = 0.5;
+    backgroundMusic.play().catch(err => console.log("Autoplay blocked:", err));
+
+    const textureLoader = new THREE.TextureLoader();
+    const backgroundTexture = textureLoader.load('./assets/monkey-run-background.png');
+    scene.background = backgroundTexture;
+
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 5, 10);
     camera.lookAt(0, 0, 0);
@@ -34,7 +45,7 @@ function init() {
     score = { value: 0 };
     gameRunning = true;
 
-    document.getElementById("restart-button").addEventListener("click", () => location.reload());
+    document.getElementById("restart-button").addEventListener("click", restartGame);
 
     animate();
 }
@@ -51,6 +62,12 @@ function animate() {
 function stopGame() {
     gameRunning = false;
     document.getElementById("game-over").style.display = "block";
+    backgroundMusic.pause();
+}
+
+function restartGame() {
+    backgroundMusic.play();
+    location.reload();
 }
 
 window.addEventListener('DOMContentLoaded', init);

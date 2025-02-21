@@ -9,13 +9,21 @@ export class Monkey {
         this.jumpVelocity = 0;
         this.gravity = -0.008;
 
-        // Create monkey mesh
-        const geometry = new THREE.SphereGeometry(0.5, 16, 16);
-        const material = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+        const textureLoader = new THREE.TextureLoader();
+        const monkeyTexture = textureLoader.load('./assets/monkey.png'); 
+
+        monkeyTexture.wrapS = THREE.RepeatWrapping; 
+        monkeyTexture.wrapT = THREE.RepeatWrapping; 
+        monkeyTexture.repeat.set(2, 2);
+
+        const geometry = new THREE.SphereGeometry(0.75, 32, 32);
+        const material = new THREE.MeshStandardMaterial({
+            map: monkeyTexture,
+        });
+
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.set(0, 0.5, 0);
 
-        // Listen for key presses
         document.addEventListener("keydown", (e) => this.handleInput(e));
     }
 

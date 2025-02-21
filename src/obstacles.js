@@ -6,6 +6,9 @@ export class ObstacleManager {
         this.lanePositions = [-3, 0, 3];
         this.obstacles = [];
 
+        this.collisionSound = new Audio('./assets/monkey-run-collision.mp3');
+        this.collisionSound.volume = 0.8;
+
         setInterval(() => this.spawnObstacle(), 2500);
     }
 
@@ -29,6 +32,9 @@ export class ObstacleManager {
 
             const distance = obstacle.position.distanceTo(monkey.mesh.position);
             if (distance < 0.8 && monkey.mesh.position.y <= 1) {
+                this.collisionSound.currentTime = 0; // Reset to allow replay
+                this.collisionSound.play();
+
                 stopGame();
             }
         });
