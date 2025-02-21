@@ -1,64 +1,56 @@
 import * as THREE from 'three';
 import { createEnvironment } from './environment.js';
-import { createMonkey } from './monkey.js';
+import { Monkey } from './monkey.js';
+import { BananaManager } from './banana.js';
+import { ObstacleManager } from './obstacles.js';
 
-let scene, camera, renderer, monkey;
+let scene, camera, renderer, monkey, bananas, obstacles, score, gameRunning;
 
 function init() {
-  // Create scene
-  scene = new THREE.Scene();
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 10);
+    camera.lookAt(0, 0, 0);
 
-  // Create camera
-  camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
-  camera.position.set(0, 2, 5);
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-  // Create renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 10, 5);
+    scene.add(directionalLight);
 
-  // Basic lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-  scene.add(ambientLight);
+    const environment = createEnvironment();
+    scene.add(environment);
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-  directionalLight.position.set(10, 10, 5);
-  scene.add(directionalLight);
+    monkey = new Monkey();
+    scene.add(monkey.mesh);
 
-  // Environment
-  const environment = createEnvironment();
-  scene.add(environment);
+    bananas = new BananaManager(scene);
+    obstacles = new ObstacleManager(scene);
 
-  // Monkey placeholder mesh
-  monkey = createMonkey();
-  scene.add(monkey);
+    score = { value: 0 };
+    gameRunning = true;
 
-  // Handle window resizing
-  window.addEventListener('resize', onWindowResize);
+    document.getElementById("restart-button").addEventListener("click", () => location.reload());
 
-  // Start animation loop
-  animate();
+    animate();
 }
 
 function animate() {
-  requestAnimationFrame(animate);
-
-  // Simple rotation to see something move
-  monkey.rotation.y += 0.01;
-
-  renderer.render(scene, camera);
+    if (!gameRunning) return;
+    requestAnimationFrame(animate);
+    monkey.update();
+    bananas.update(monkey, score);
+    obstacles.update(monkey, scene, stopGame);
+    renderer.render(scene, camera);
 }
 
-function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+function stopGame() {
+    gameRunning = false;
+    document.getElementById("game-over").style.display = "block";
 }
 
-// Initialize scene once the DOM is ready
 window.addEventListener('DOMContentLoaded', init);

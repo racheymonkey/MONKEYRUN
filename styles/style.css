@@ -1,12 +1,54 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    background: #f0f0f0; 
-  }
-  
-  h1 {
-    text-align: center;
-    margin: 1rem 0;
-  }
-  
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: #f0f0f0;
+  text-align: center;
+}
+
+h1 {
+  margin: 1rem 0;
+}
+
+/* Score Display */
+#score {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+/* Game Over Screen */
+#game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 30px;
+  border-radius: 10px;
+  display: none;
+}
+
+#game-over h2 {
+  margin-bottom: 20px;
+}
+
+#restart-button {
+  font-size: 18px;
+  padding: 10px 20px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#restart-button:hover {
+  background: #cc0000;
+}
