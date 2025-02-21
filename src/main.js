@@ -3,12 +3,13 @@ import { createEnvironment } from './environment.js';
 import { createMonkey } from './monkey.js';
 
 let scene, camera, renderer, monkey;
+const keys = { w: false, a: false, s: false, d: false }; // Track which keys are held
 
 function init() {
-  // Create scene
+  // Scene setup
   scene = new THREE.Scene();
 
-  // Create camera
+  // Camera
   camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -17,12 +18,12 @@ function init() {
   );
   camera.position.set(0, 2, 5);
 
-  // Create renderer
+  // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // Basic lighting
+  // Lights
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
 
@@ -34,24 +35,67 @@ function init() {
   const environment = createEnvironment();
   scene.add(environment);
 
-  // Monkey placeholder mesh
+  // Monkey
   monkey = createMonkey();
   scene.add(monkey);
 
-  // Handle window resizing
+  // Key Listeners
+  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
+
+  // Window resize listener
   window.addEventListener('resize', onWindowResize);
 
-  // Start animation loop
+  // Start loop
   animate();
 }
 
 function animate() {
   requestAnimationFrame(animate);
 
-  // Simple rotation to see something move
+  // Rotate the monkey a bit (for visual effect)
   monkey.rotation.y += 0.01;
 
+  // Handle movement
+  handleMovement();
+
+  // Render the scene
   renderer.render(scene, camera);
+}
+
+function handleMovement() {
+  const speed = 0.05; // Movement speed
+
+  // W: move forward (negative Z)
+  if (keys.w) {
+    monkey.position.z -= speed;
+  }
+  // S: move backward (positive Z)
+  if (keys.s) {
+    monkey.position.z += speed;
+  }
+  // A: move left (negative X)
+  if (keys.a) {
+    monkey.position.x -= speed;
+  }
+  // D: move right (positive X)
+  if (keys.d) {
+    monkey.position.x += speed;
+  }
+}
+
+function onKeyDown(event) {
+  const key = event.key.toLowerCase();
+  if (keys.hasOwnProperty(key)) {
+    keys[key] = true;
+  }
+}
+
+function onKeyUp(event) {
+  const key = event.key.toLowerCase();
+  if (keys.hasOwnProperty(key)) {
+    keys[key] = false;
+  }
 }
 
 function onWindowResize() {
@@ -60,5 +104,4 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Initialize scene once the DOM is ready
 window.addEventListener('DOMContentLoaded', init);
