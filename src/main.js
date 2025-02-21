@@ -15,6 +15,12 @@ function init() {
     backgroundMusic.volume = 0.5;
     backgroundMusic.play().catch(err => console.log("Autoplay blocked:", err));
 
+    document.addEventListener("keydown", () => {
+      if (backgroundMusic.paused) {
+          backgroundMusic.play();
+      }
+    });
+
     const textureLoader = new THREE.TextureLoader();
     const backgroundTexture = textureLoader.load('./assets/monkey-run-background.png');
     scene.background = backgroundTexture;
