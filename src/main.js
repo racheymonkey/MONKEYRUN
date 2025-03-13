@@ -30,7 +30,8 @@ function init() {
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 3, 10);
-    camera.lookAt(0, 1, 0);
+    // camera.position.set(0, 50, 10);
+    camera.lookAt(scene.position);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -46,7 +47,7 @@ function init() {
     const environment = createEnvironment();
     scene.add(environment);
 
-    monkey = new Monkey();
+    monkey = new Monkey(scene);
     scene.add(monkey.mesh);
 
     bananas = new BananaManager(scene);

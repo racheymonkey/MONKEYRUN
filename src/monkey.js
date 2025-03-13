@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class Monkey {
-    constructor() {
+    constructor(scene) {
         this.laneIndex = 1;
         this.lanePositions = [-3, 0, 3];
         this.targetX = this.lanePositions[this.laneIndex];
@@ -13,18 +14,17 @@ export class Monkey {
         // If true, lane movement and jumping are disabled
         this.isAttached = false;
 
-        const textureLoader = new THREE.TextureLoader();
-        const monkeyTexture = textureLoader.load('./assets/monkey.png');
+        this.mesh = new THREE.Group(); // Placeholder for the loaded model
 
-        monkeyTexture.wrapS = THREE.RepeatWrapping;
-        monkeyTexture.wrapT = THREE.RepeatWrapping;
-        monkeyTexture.repeat.set(2, 2);
+        const loader = new GLTFLoader();
+        loader.load('./assets/monkey.glb', (gltf) => {
+            this.mesh = gltf.scene;
+            this.mesh.scale.set(0.35, 0.35, 0.35);
+            this.mesh.position.set(0, 0.5, 0);
 
-        const geometry = new THREE.SphereGeometry(0.75, 32, 32);
-        const material = new THREE.MeshStandardMaterial({ map: monkeyTexture });
-
-        this.mesh = new THREE.Mesh(geometry, material);
-        this.mesh.position.set(0, 0.5, 0);
+            this.mesh.rotation.y = 0;
+            scene.add(this.mesh);
+        });
 
         document.addEventListener("keydown", (e) => this.handleInput(e));
     }
