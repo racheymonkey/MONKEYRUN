@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ObstacleManager {
     constructor(scene) {
@@ -9,17 +10,21 @@ export class ObstacleManager {
         this.collisionSound = new Audio('./assets/monkey-run-collision.mp3');
         this.collisionSound.volume = 0.8;
 
+        const loader = new GLTFLoader();
+        loader.load('./assets/rock.glb', (gltf) => {
+            this.model = gltf.scene;
+            this.model.scale.set(0.5, 0.5, 0.5);
+        });
+
         setInterval(() => this.spawnObstacle(), 2500);
     }
 
     spawnObstacle() {
         const lane = this.lanePositions[Math.floor(Math.random() * 3)];
-        const y = 0.5;
+        const y = 0.4;
         const z = -30; 
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-        const obstacle = new THREE.Mesh(geometry, material);
+        const obstacle = this.model.clone();
         obstacle.position.set(lane, y, z);
 
         this.scene.add(obstacle);
@@ -27,18 +32,22 @@ export class ObstacleManager {
     }
 
     update(monkey, scene, stopGame) {
+        const raycaster = new THREE.Raycaster();
+        const direction = new THREE.Vector3(0, 0, 1);
+    
         this.obstacles.forEach((obstacle, index) => {
             obstacle.position.z += 0.2;
 
-            const distance = obstacle.position.distanceTo(monkey.mesh.position);
-            if (distance < 0.8 && monkey.mesh.position.y <= 1) {
-                this.collisionSound.currentTime = 0; // Reset to allow replay
+            const obstacleBox = new THREE.Box3().setFromObject(obstacle);
+            const monkeyBox = new THREE.Box3().setFromObject(monkey.mesh);
+    
+            if (obstacleBox.intersectsBox(monkeyBox)) {
+                this.collisionSound.currentTime = 0;
                 this.collisionSound.play();
-
                 stopGame();
             }
         });
-
-        this.obstacles = this.obstacles.filter(obstacle => obstacle.position.z < 10);
+    
+        this.obstacles = this.obstacles.filter(obstacle => obstacle.position.z < 13);
     }
-}
+}    

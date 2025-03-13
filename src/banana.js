@@ -14,7 +14,6 @@ export class BananaManager {
         loader.load('./assets/banana.glb', (gltf) => {
             this.model = gltf.scene;
             this.model.scale.set(0.025, 0.025, 0.025);
-            this.mesh.position.set(0, -1, 0);
         });
 
         // Start generating bananas
