@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createEnvironment } from './environment.js';
+import { Environment } from './environment.js';
 import { Monkey } from './monkey.js';
 import { BananaManager } from './banana.js';
 import { ObstacleManager } from './obstacles.js';
@@ -8,6 +8,7 @@ import { VineManager } from './vines.js';
 let scene, camera, renderer;
 let monkey, bananas, obstacles, vines, score, gameRunning;
 let backgroundMusic;
+let environment;
 
 function init() {
     scene = new THREE.Scene();
@@ -44,7 +45,7 @@ function init() {
     directionalLight.position.set(10, 10, 5);
     scene.add(directionalLight);
 
-    const environment = createEnvironment();
+    environment = new Environment(scene);
     scene.add(environment);
 
     monkey = new Monkey(scene);
@@ -75,6 +76,7 @@ function animate() {
     bananas.update(monkey, score);
     obstacles.update(monkey, scene, stopGame);
     vines.update(monkey);
+    environment.update();
 
     renderer.render(scene, camera);
 }

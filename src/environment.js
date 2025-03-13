@@ -1,24 +1,49 @@
 import * as THREE from 'three';
 
-export function createEnvironment() {
-    const group = new THREE.Group();
+export class Environment {
+    constructor(scene) {
+        this.scene = scene;
+        this.group = new THREE.Group();
 
-    // Ground plane
-    const planeGeometry = new THREE.PlaneGeometry(10, 80);
-    const planeMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.rotation.x = -Math.PI / 2;
-    group.add(plane);
+        // Ground plane
+        const textureLoader = new THREE.TextureLoader();
+        const grassTexture = textureLoader.load('./assets/grass.jpg', () => {
+            grassTexture.wrapS = THREE.RepeatWrapping;
+            grassTexture.wrapT = THREE.RepeatWrapping;
+            grassTexture.repeat.set(5, 35);
+        });
 
-    // Lane markers
-    const lanePositions = [-3, 0, 3];
-    lanePositions.forEach((xPos) => {
-        const laneGeometry = new THREE.BoxGeometry(0.1, 0.1, 80);
-        const laneMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        const lane = new THREE.Mesh(laneGeometry, laneMaterial);
-        lane.position.set(xPos, 0.01, 0);
-        group.add(lane);
-    });
+        const planeGeometry = new THREE.PlaneGeometry(9, 200);
+        const planeMaterial = new THREE.MeshStandardMaterial({
+            map: grassTexture,
+            side: THREE.DoubleSide
+        });
 
-    return group;
+        this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        this.plane.rotation.x = -Math.PI / 2;
+        this.plane.position.y = 0;
+        this.plane.position.z = -50;
+        this.group.add(this.plane);
+
+        // Lane markers
+        const lanePositions = [-3, 0, 3];
+        lanePositions.forEach((xPos) => {
+            const laneGeometry = new THREE.BoxGeometry(0.1, 0.1, 200);
+            const laneMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+            const lane = new THREE.Mesh(laneGeometry, laneMaterial);
+            lane.position.set(xPos, 0.01, 0);
+            this.group.add(lane);
+        });
+
+        scene.add(this.group);
+    }
+
+    update() {
+        const speed = 0.2;
+        this.plane.position.z += speed;
+
+        if (this.plane.position.z >= 0) {
+            this.plane.position.z = -50;
+        }
+    }
 }
