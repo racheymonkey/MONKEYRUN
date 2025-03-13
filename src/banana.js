@@ -6,6 +6,8 @@ export class BananaManager {
         this.scene = scene;
         this.lanePositions = [-3, 0, 3];
         this.bananas = [];
+        this.lastLane = 0;
+        this.lastZ = -30;
 
         this.eatSound = new Audio('./assets/banana-eat.mp3');
         this.eatSound.volume = 0.8;
@@ -17,20 +19,36 @@ export class BananaManager {
         });
 
         // Start generating bananas
-        setInterval(() => this.spawnBanana(), 1500);
+        setInterval(() => this.spawnBananaPath(), 250);
     }
 
-    spawnBanana() {
-        const lane = this.lanePositions[Math.floor(Math.random() * 3)];
-        const y = 0.5;
-        const z = -30; 
+    randomChoice(choices) {
+        return choices[Math.floor(Math.random() * choices.length)];
+    }
+    clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    spawnBananaPath() {
+        if (!this.model) return;
+    
+        let nextLane = this.lastLane;
+        let nextZ = this.lastZ - 2;
+        let nextY = 0.5;
+    
+        if (Math.random() < 0.3) {
+            let potentialLanes = this.lanePositions.filter(lane => lane !== this.lastLane);
+            nextLane = this.randomChoice(potentialLanes);
+        }
 
         const banana = this.model.clone();
-        banana.position.set(lane, y, z);
-
+        banana.position.set(nextLane, nextY, nextZ);
         this.scene.add(banana);
-        this.bananas.push(banana);
-    }
+        this.bananas.push(banana);s
+    
+        this.lastLane = nextLane;
+        this.lastZ = nextZ;
+    }    
 
     update(monkey, score) {
         this.bananas.forEach((banana, index) => {

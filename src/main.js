@@ -59,8 +59,6 @@ function init() {
 
     document.getElementById("restart-button").addEventListener("click", restartGame);
 
-    document.getElementById("loading-screen").style.display = "block";
-
     animate();
 }
 
