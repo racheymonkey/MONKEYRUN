@@ -155,7 +155,8 @@ export class VineManager {
         // puts monkey near pivot on ground
         const pivotWorldPos = new THREE.Vector3();
         pivot.getWorldPosition(pivotWorldPos);
-        monkey.mesh.position.set(pivotWorldPos.x, 0.5, pivotWorldPos.z);
+
+        monkey.mesh.position.set(pivotWorldPos.x, 0.5, 0);
 
         // upward pot
         monkey.isJumping = true;
