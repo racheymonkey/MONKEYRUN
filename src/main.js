@@ -3,22 +3,25 @@ import { createEnvironment } from './environment.js';
 import { Monkey } from './monkey.js';
 import { BananaManager } from './banana.js';
 import { ObstacleManager } from './obstacles.js';
+import { VineManager } from './vines.js'; 
 
-let scene, camera, renderer, monkey, bananas, obstacles, score, gameRunning;
+let scene, camera, renderer;
+let monkey, bananas, obstacles, vines, score, gameRunning;
 let backgroundMusic;
 
 function init() {
     scene = new THREE.Scene();
 
     backgroundMusic = new Audio('./assets/monkey-run-background.mp3');
-    backgroundMusic.loop = true;  // Loop music indefinitely
+    backgroundMusic.loop = true;
     backgroundMusic.volume = 0.5;
     backgroundMusic.play().catch(err => console.log("Autoplay blocked:", err));
 
+    // If user presses any key, attempt to resume
     document.addEventListener("keydown", () => {
-      if (backgroundMusic.paused) {
-          backgroundMusic.play();
-      }
+        if (backgroundMusic.paused) {
+            backgroundMusic.play();
+        }
     });
 
     const textureLoader = new THREE.TextureLoader();
@@ -35,6 +38,7 @@ function init() {
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
+
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(10, 10, 5);
     scene.add(directionalLight);
@@ -47,6 +51,7 @@ function init() {
 
     bananas = new BananaManager(scene);
     obstacles = new ObstacleManager(scene);
+    vines = new VineManager(scene);
 
     score = { value: 0 };
     gameRunning = true;
@@ -59,9 +64,13 @@ function init() {
 function animate() {
     if (!gameRunning) return;
     requestAnimationFrame(animate);
+
+    // Update monkey, bananas, obstacles, vines
     monkey.update();
     bananas.update(monkey, score);
     obstacles.update(monkey, scene, stopGame);
+    vines.update(monkey);
+
     renderer.render(scene, camera);
 }
 
