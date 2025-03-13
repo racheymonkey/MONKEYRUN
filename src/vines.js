@@ -122,8 +122,19 @@ export class VineManager {
         // Set the monkey at that local position
         monkey.mesh.position.copy(localPos);
 
-        // Big forward push => dramatic swing
-        pivot.userData.angleVel -= 0.3;
+        // Calculate the initial swing velocity based on monkey's current velocity
+        const monkeyVelocity = monkey.jumpVelocity || 0;
+        pivot.userData.angleVel = -0.3 - monkeyVelocity * 0.5; 
+
+        // Adjust monkey's position relative to the vine's current position
+        this.scene.remove(monkey.mesh);
+        pivot.add(monkey.mesh);
+
+        // Convert monkey's old world position into pivot's local coords
+        monkey.mesh.position.copy(localPos);
+
+        // Make sure the vine swing starts from where the monkey grabbed it
+        pivot.userData.angle = Math.asin(localPos.x / pivot.userData.vineLength);
 
         // Auto-detach after 100 ms (tweak as desired)
         setTimeout(() => {
