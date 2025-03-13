@@ -22,7 +22,7 @@ export class Monkey {
             this.mesh.scale.set(0.35, 0.35, 0.35);
             this.mesh.position.set(0, 0.5, 0);
 
-            this.mesh.rotation.y = 0;
+            this.mesh.rotation.y = Math.PI;
             scene.add(this.mesh);
         });
 

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class BananaManager {
     constructor(scene) {
@@ -9,6 +10,13 @@ export class BananaManager {
         this.eatSound = new Audio('./assets/banana-eat.mp3');
         this.eatSound.volume = 0.8;
 
+        const loader = new GLTFLoader();
+        loader.load('./assets/banana.glb', (gltf) => {
+            this.model = gltf.scene;
+            this.model.scale.set(0.025, 0.025, 0.025);
+            this.mesh.position.set(0, -1, 0);
+        });
+
         // Start generating bananas
         setInterval(() => this.spawnBanana(), 1500);
     }
@@ -18,9 +26,7 @@ export class BananaManager {
         const y = 0.5;
         const z = -30; 
 
-        const geometry = new THREE.SphereGeometry(0.3, 8, 8);
-        const material = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-        const banana = new THREE.Mesh(geometry, material);
+        const banana = this.model.clone();
         banana.position.set(lane, y, z);
 
         this.scene.add(banana);
