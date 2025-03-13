@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class Monkey {
-    constructor(scene) {
+    constructor(scene, loadingManager) {
         this.laneIndex = 1;
         this.lanePositions = [-3, 0, 3];
         this.targetX = this.lanePositions[this.laneIndex];
@@ -16,7 +16,7 @@ export class Monkey {
 
         this.mesh = new THREE.Group(); // Placeholder for the loaded model
 
-        const loader = new GLTFLoader();
+        const loader = new GLTFLoader(loadingManager);
         loader.load('./assets/monkey.glb', (gltf) => {
             this.mesh = gltf.scene;
             this.mesh.scale.set(0.9, 0.9, 0.9);

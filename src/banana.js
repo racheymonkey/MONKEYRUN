@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class BananaManager {
-    constructor(scene) {
+    constructor(scene, loadingManager) {
         this.scene = scene;
         this.lanePositions = [-3, 0, 3];
         this.bananas = [];
@@ -10,7 +10,7 @@ export class BananaManager {
         this.eatSound = new Audio('./assets/banana-eat.mp3');
         this.eatSound.volume = 0.8;
 
-        const loader = new GLTFLoader();
+        const loader = new GLTFLoader(loadingManager);
         loader.load('./assets/banana.glb', (gltf) => {
             this.model = gltf.scene;
             this.model.scale.set(0.025, 0.025, 0.025);

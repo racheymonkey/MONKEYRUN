@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 
 export class Environment {
-    constructor(scene) {
+    constructor(scene, loadingManager) {
         this.scene = scene;
         this.group = new THREE.Group();
 
         // Ground plane
-        const textureLoader = new THREE.TextureLoader();
+        const textureLoader = new THREE.TextureLoader(loadingManager);
         const grassTexture = textureLoader.load('./assets/grass.jpg', () => {
             grassTexture.wrapS = THREE.RepeatWrapping;
             grassTexture.wrapT = THREE.RepeatWrapping;

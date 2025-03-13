@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ObstacleManager {
-    constructor(scene) {
+    constructor(scene, loadingManager) {
         this.scene = scene;
         this.lanePositions = [-3, 0, 3];
         this.obstacles = [];
@@ -12,7 +12,7 @@ export class ObstacleManager {
 
         this.models = { rock: null, tree: null };
 
-        const loader = new GLTFLoader();
+        const loader = new GLTFLoader(loadingManager);
 
         loader.load('./assets/rock.glb', (gltf) => {
             this.models.rock = gltf.scene;

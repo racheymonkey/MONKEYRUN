@@ -10,6 +10,9 @@ let monkey, bananas, obstacles, vines, score, gameRunning;
 let backgroundMusic;
 let environment;
 
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onLoad = startGame;
+
 function init() {
     scene = new THREE.Scene();
 
@@ -45,20 +48,18 @@ function init() {
     directionalLight.position.set(10, 10, 5);
     scene.add(directionalLight);
 
-    environment = new Environment(scene);
-    scene.add(environment);
-
-    monkey = new Monkey(scene);
-    scene.add(monkey.mesh);
-
-    bananas = new BananaManager(scene);
-    obstacles = new ObstacleManager(scene);
-    vines = new VineManager(scene);
+    environment = new Environment(scene, loadingManager);
+    monkey = new Monkey(scene, loadingManager);
+    bananas = new BananaManager(scene, loadingManager);
+    obstacles = new ObstacleManager(scene, loadingManager);
+    vines = new VineManager(scene, loadingManager);
 
     score = { value: 0 };
-    gameRunning = true;
+    gameRunning = false;
 
     document.getElementById("restart-button").addEventListener("click", restartGame);
+
+    document.getElementById("loading-screen").style.display = "block";
 
     animate();
 }
@@ -79,6 +80,11 @@ function animate() {
     environment.update();
 
     renderer.render(scene, camera);
+}
+
+function startGame() {
+    gameRunning = true;
+    requestAnimationFrame(animate);
 }
 
 function stopGame() {
