@@ -4,6 +4,7 @@ export class Monkey {
     constructor() {
         this.laneIndex = 1;
         this.lanePositions = [-3, 0, 3];
+        this.targetX = this.lanePositions[this.laneIndex];
         this.isMoving = false;
         this.isJumping = false;
         this.jumpVelocity = 0;
@@ -33,10 +34,16 @@ export class Monkey {
 
         // move between lanes
         if (event.key === "a" || event.key === "ArrowLeft") {
-            if (this.laneIndex > 0) this.laneIndex--;
+            if (this.laneIndex > 0) {
+                this.laneIndex--;
+                this.targetX = this.lanePositions[this.laneIndex];
+            }
         } else if (event.key === "d" || event.key === "ArrowRight") {
-            if (this.laneIndex < 2) this.laneIndex++;
-        }
+            if (this.laneIndex < 2) {
+                this.laneIndex++;
+                this.targetX = this.lanePositions[this.laneIndex];
+            }
+        }        
 
         // jump with w or up arrow
         if ((event.key === "w" || event.key === "ArrowUp") && !this.isJumping) {
@@ -53,7 +60,7 @@ export class Monkey {
         if (this.isAttached) return;
 
         // lane-based horizontal move
-        this.mesh.position.x = this.lanePositions[this.laneIndex];
+        this.mesh.position.x += (this.targetX - this.mesh.position.x) * 0.2;
 
         // jumping physics for the monkey
         if (this.isJumping) {
