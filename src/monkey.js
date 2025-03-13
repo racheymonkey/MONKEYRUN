@@ -19,11 +19,18 @@ export class Monkey {
         const loader = new GLTFLoader();
         loader.load('./assets/monkey.glb', (gltf) => {
             this.mesh = gltf.scene;
-            this.mesh.scale.set(0.35, 0.35, 0.35);
+            this.mesh.scale.set(0.9, 0.9, 0.9);
             this.mesh.position.set(0, 0.5, 0);
 
             this.mesh.rotation.y = Math.PI;
             scene.add(this.mesh);
+
+            if (gltf.animations.length > 0) {
+                this.mixer = new THREE.AnimationMixer(this.mesh);
+                const action = this.mixer.clipAction(gltf.animations[0]);
+                action.setEffectiveTimeScale(2.0);
+                action.play();
+            }
         });
 
         document.addEventListener("keydown", (e) => this.handleInput(e));
@@ -55,7 +62,11 @@ export class Monkey {
         setTimeout(() => (this.isMoving = false), 200);
     }
 
-    update() {
+    update(deltaTime) {
+        if (this.mixer) {
+            this.mixer.update(deltaTime);
+        }
+
         // when attached vine manager will control monkey movement
         if (this.isAttached) return;
 

@@ -62,12 +62,16 @@ function init() {
     animate();
 }
 
+const clock = new THREE.Clock();
+
 function animate() {
     if (!gameRunning) return;
     requestAnimationFrame(animate);
 
+    const deltaTime = clock.getDelta();
+
     // Update monkey, bananas, obstacles, vines
-    monkey.update();
+    monkey.update(deltaTime);
     bananas.update(monkey, score);
     obstacles.update(monkey, scene, stopGame);
     vines.update(monkey);
