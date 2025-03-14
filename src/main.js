@@ -16,6 +16,11 @@ loadingManager.onLoad = startGame;
 function init() {
   scene = new THREE.Scene();
 
+  // Add fog for depth - darker green color
+  scene.fog = new THREE.Fog(0x2f4f2f, 20, 60);
+  // Set background color to match fog - darker forest green
+  scene.background = new THREE.Color(0x2f4f2f);
+
   backgroundMusic = new Audio("./assets/monkey-run-background.mp3");
   backgroundMusic.loop = true;
   backgroundMusic.volume = 0.5;
@@ -28,12 +33,6 @@ function init() {
     }
   });
 
-  const textureLoader = new THREE.TextureLoader();
-  const backgroundTexture = textureLoader.load(
-    "./assets/monkey-run-background.png"
-  );
-  scene.background = backgroundTexture;
-
   camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -41,17 +40,16 @@ function init() {
     1000
   );
   camera.position.set(0, 5, 7);
-  // camera.position.set(0, 50, 10);
   camera.lookAt(scene.position);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Slightly dimmer ambient light
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7); // Adjusted light intensity
   directionalLight.position.set(10, 10, 5);
   scene.add(directionalLight);
 
