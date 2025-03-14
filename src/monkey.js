@@ -14,6 +14,10 @@ export class Monkey {
         // If true, lane movement and jumping are disabled
         this.isAttached = false;
 
+        // Add transition speed property - can be adjusted for tuning
+        this.groundTransitionSpeed = 0.2; // Original speed for ground movement
+        this.airTransitionSpeed = 0.08;   // Slower speed for air movement
+
         this.mesh = new THREE.Group(); // Placeholder for the loaded model
 
         const loader = new GLTFLoader(loadingManager);
@@ -70,8 +74,36 @@ export class Monkey {
         // when attached vine manager will control monkey movement
         if (this.isAttached) return;
 
-        // lane-based horizontal move
-        this.mesh.position.x += (this.targetX - this.mesh.position.x) * 0.2;
+        // Use different transition speeds for ground vs air
+        const transitionSpeed = this.isJumping ? this.airTransitionSpeed : this.groundTransitionSpeed;
+        
+        // Smoother lane-based horizontal movement
+        const currentX = this.mesh.position.x;
+        const targetX = this.targetX;
+        const distance = targetX - currentX;
+        
+        // Apply easing to make the movement more natural
+        // Use a cubic easing formula for smoother acceleration/deceleration
+        let moveStep;
+        if (Math.abs(distance) > 0.1) {
+            // For larger distances, use cubic easing
+            moveStep = distance * transitionSpeed * (0.5 + Math.abs(distance) * 0.1);
+        } else {
+            // For small distances, use linear movement to snap to position
+            moveStep = distance * 0.5;
+        }
+        
+        this.mesh.position.x += moveStep;
+        
+        // Add slight rotation to give a more natural feeling to lane changes
+        if (Math.abs(distance) > 0.05) {
+            // Tilt in the direction of movement
+            const targetTilt = -Math.sign(distance) * Math.min(0.1, Math.abs(distance) * 0.05);
+            this.mesh.rotation.z = targetTilt;
+        } else {
+            // Reset tilt when close to target
+            this.mesh.rotation.z = 0;
+        }
 
         // jumping physics for the monkey
         if (this.isJumping) {

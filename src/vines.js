@@ -12,7 +12,7 @@ export class VineManager {
     spawnVine() {
         // Create a pivot group for the vine's anchor
         const lane = this.lanePositions[Math.floor(Math.random() * 3)];
-        const pivotY = 3;
+        const pivotY = 5;
         const pivotZ = -30;
 
         const pivot = new THREE.Group();

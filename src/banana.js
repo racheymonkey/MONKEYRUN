@@ -16,6 +16,28 @@ export class BananaManager {
         loader.load('./assets/banana.glb', (gltf) => {
             this.model = gltf.scene;
             this.model.scale.set(0.025, 0.025, 0.025);
+            
+            // Pre-modify materials on the template model
+            // This is more efficient than modifying each clone
+            this.model.traverse((object) => {
+                if (object.isMesh && object.material) {
+                    // Handle both single and array materials
+                    const materials = Array.isArray(object.material) ? object.material : [object.material];
+                    
+                    materials.forEach(material => {
+                        // Clone the material to avoid affecting other instances
+                        const newMaterial = material.clone();
+                        // Add subtle emissive glow - much cheaper than lights
+                        newMaterial.emissive = new THREE.Color(0xffcc00);
+                        newMaterial.emissiveIntensity = 0.3;
+                        
+                        // Replace the original material
+                        if (!Array.isArray(object.material)) {
+                            object.material = newMaterial;
+                        }
+                    });
+                }
+            });
         });
 
         // Start generating bananas
@@ -43,8 +65,14 @@ export class BananaManager {
 
         const banana = this.model.clone();
         banana.position.set(nextLane, nextY, nextZ);
+        
+        // Simple rotation data - no complex animation
+        banana.userData = {
+            rotationSpeed: 0.02
+        };
+        
         this.scene.add(banana);
-        this.bananas.push(banana);s
+        this.bananas.push(banana);
     
         this.lastLane = nextLane;
         this.lastZ = nextZ;
@@ -53,6 +81,11 @@ export class BananaManager {
     update(monkey, score) {
         this.bananas.forEach((banana, index) => {
             banana.position.z += 0.2;
+            
+            // Simple rotation - very cheap operation
+            if (banana.userData) {
+                banana.rotation.y += banana.userData.rotationSpeed;
+            }
 
             const distance = banana.position.distanceTo(monkey.mesh.position);
             if (distance < 0.6) {
