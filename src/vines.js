@@ -1,10 +1,11 @@
 import * as THREE from "three";
 
 export class VineManager {
-  constructor(scene) {
+  constructor(scene, score) {
     this.scene = scene;
     this.lanePositions = [-3, 0, 3];
     this.vines = [];
+    this.score = score; // Store reference to the score object
 
     setInterval(() => this.spawnVine(), 2000);
   }
@@ -114,6 +115,13 @@ export class VineManager {
   attachMonkey(pivot, monkey) {
     pivot.userData.hasMonkey = true;
     monkey.isAttached = true;
+
+    // Award 5 banana points for swinging on a vine
+    if (this.score) {
+      this.score.value += 5;
+      // Update the score display
+      document.querySelector(".score-text").innerText = this.score.value;
+    }
 
     const worldPos = monkey.mesh.position.clone();
 

@@ -4,11 +4,13 @@ import { Monkey } from "./monkey.js";
 import { BananaManager } from "./banana.js";
 import { ObstacleManager } from "./obstacles.js";
 import { VineManager } from "./vines.js";
+import { WeatherManager } from "./weather.js";
 
 let scene, camera, renderer;
 let monkey, bananas, obstacles, vines, score, gameRunning;
 let backgroundMusic;
 let environment;
+let weather;
 
 const loadingManager = new THREE.LoadingManager();
 loadingManager.onLoad = startGame;
@@ -16,10 +18,9 @@ loadingManager.onLoad = startGame;
 function init() {
   scene = new THREE.Scene();
 
-  // Add fog for depth - darker green color
-  scene.fog = new THREE.Fog(0x2f4f2f, 20, 60);
-  // Set background color to match fog - darker forest green
-  scene.background = new THREE.Color(0x2f4f2f);
+  // Change fog and background color to light blue
+  scene.fog = new THREE.Fog(0xadd8e6, 20, 60); // Light blue fog
+  scene.background = new THREE.Color(0xadd8e6); // Light blue background
 
   backgroundMusic = new Audio("./assets/monkey-run-background.mp3");
   backgroundMusic.loop = true;
@@ -55,11 +56,21 @@ function init() {
 
   environment = new Environment(scene, loadingManager);
   monkey = new Monkey(scene, loadingManager);
+  
+  // Initialize score object first so it can be passed to other components
+  score = { value: 0 };
+  
   bananas = new BananaManager(scene, loadingManager);
   obstacles = new ObstacleManager(scene, loadingManager);
-  vines = new VineManager(scene, loadingManager);
+  // Pass score object to VineManager
+  vines = new VineManager(scene, score);
+  
+  // Initialize weather system
+  weather = new WeatherManager(scene);
+  
+  // Connect weather and monkey for sliding during rain
+  weather.setMonkey(monkey);
 
-  score = { value: 0 };
   gameRunning = false;
 
   document
@@ -83,6 +94,9 @@ function animate() {
   obstacles.update(monkey, scene, stopGame);
   vines.update(monkey);
   environment.update();
+  
+  // Update weather effects
+  weather.update();
 
   renderer.render(scene, camera);
 }

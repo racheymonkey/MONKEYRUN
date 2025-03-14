@@ -82,8 +82,8 @@ export class Environment {
           z + (Math.random() - 0.5) * 4
         );
       }
-      // Right side trees
-      for (let x = 5; x < 15; x += 2.5) {
+      // Right side trees - moved further away from track (starting at x=7 instead of x=5)
+      for (let x = 7; x < 17; x += 2.5) {
         this.createTree(
           x + (Math.random() - 0.5) * 2,
           z + (Math.random() - 0.5) * 4
@@ -97,8 +97,8 @@ export class Environment {
           z + (Math.random() - 0.5) * 5
         );
       }
-      // Background trees - right side
-      for (let x = 15; x < 40; x += 3) {
+      // Background trees - right side - also moved further right
+      for (let x = 17; x < 42; x += 3) {
         this.createTree(
           x + (Math.random() - 0.5) * 3,
           z + (Math.random() - 0.5) * 5
