@@ -1,13 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Permanent Marker', cursive;
   background: #f0f0f0;
   text-align: center;
-}
-
-h1 {
-  margin: 1rem 0;
+  overflow: hidden;
 }
 
 /* Score Display */
@@ -15,11 +12,27 @@ h1 {
   position: absolute;
   top: 20px;
   left: 20px;
-  font-size: 24px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
+  font-size: 32px;
+  background: rgba(139, 69, 19, 0.9);
+  color: #FFD700;
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 3px solid #4a2810;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.banana-icon {
+  font-size: 32px;
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.score-text {
+  font-size: 32px;
+  color: #FFD700;
 }
 
 /* Game Over Screen */
@@ -42,13 +55,18 @@ h1 {
 #restart-button {
   font-size: 18px;
   padding: 10px 20px;
-  background: #ff4444;
+  background: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  font-family: 'Permanent Marker', cursive;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
 }
 
 #restart-button:hover {
-  background: #cc0000;
+  background: #45a049;
+  transform: scale(1.05);
 }
