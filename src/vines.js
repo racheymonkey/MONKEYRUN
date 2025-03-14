@@ -32,15 +32,15 @@ export class VineManager {
     vineGeom.computeBoundingSphere();
     const { center, radius } = vineGeom.boundingSphere;
 
-    // Store swinging & collision data
+    // Store swinging & collision data with gentler initial swing
     pivot.userData = {
       angle: 0,
-      angleVel: -0.02 - Math.random() * 0.02, // gentle forward swing
+      angleVel: -0.01 - Math.random() * 0.01, // Reduced initial swing
       angleAcc: 0,
       vineLength,
       hasMonkey: false,
       vineMesh,
-      sphereCenter: center.clone(), // local-space center of bounding sphere
+      sphereCenter: center.clone(),
       sphereRadius: radius,
     };
 
@@ -86,8 +86,8 @@ export class VineManager {
   }
 
   updatePendulum(pivot) {
-    // angleAcc = -(g / length) * sin(angle)
-    const g = 0.1;
+    // Reduced gravity for gentler swings
+    const g = 0.05; // Reduced from 0.1
     const len = pivot.userData.vineLength;
     const angle = pivot.userData.angle;
     let angleVel = pivot.userData.angleVel;
@@ -95,8 +95,14 @@ export class VineManager {
 
     angleAcc = (-g / len) * Math.sin(angle);
     angleVel += angleAcc;
-    angleVel *= 0.98; // friction
+    angleVel *= 0.99; // Increased friction slightly for more damping
     pivot.userData.angle += angleVel;
+
+    // Add angle limits to prevent extreme swings
+    pivot.userData.angle = Math.max(
+      Math.min(pivot.userData.angle, Math.PI / 4),
+      -Math.PI / 4
+    );
 
     pivot.userData.angleVel = angleVel;
     pivot.userData.angleAcc = angleAcc;
@@ -123,8 +129,9 @@ export class VineManager {
     monkey.mesh.position.copy(localPos);
 
     // Calculate the initial swing velocity based on monkey's current velocity
+    // Reduced the impact of monkey's velocity on swing
     const monkeyVelocity = monkey.jumpVelocity || 0;
-    pivot.userData.angleVel = -0.3 - monkeyVelocity * 0.5;
+    pivot.userData.angleVel = -0.15 - monkeyVelocity * 0.25; // Reduced from -0.3 and 0.5
 
     // Adjust monkey's position relative to the vine's current position
     this.scene.remove(monkey.mesh);
@@ -136,13 +143,13 @@ export class VineManager {
     // Make sure the vine swing starts from where the monkey grabbed it
     pivot.userData.angle = Math.asin(localPos.x / pivot.userData.vineLength);
 
-    // Auto-detach after 100 ms (tweak as desired)
+    // Auto-detach after 150 ms (increased from 100ms for slightly longer swings)
     setTimeout(() => {
       if (pivot.userData.hasMonkey) {
-        console.log("Auto-detach monkey after 100ms.");
+        console.log("Auto-detach monkey after 150ms.");
         this.detachMonkey(pivot, monkey);
       }
-    }, 100);
+    }, 150);
   }
 
   detachMonkey(pivot, monkey) {
@@ -158,9 +165,9 @@ export class VineManager {
 
     monkey.mesh.position.set(pivotWorldPos.x, 0.5, 0);
 
-    // upward pot
+    // Reduced upward boost
     monkey.isJumping = true;
-    monkey.jumpVelocity = 0.25;
+    monkey.jumpVelocity = 0.2; // Reduced from 0.25
 
     console.log("Monkey detached from vine.");
   }

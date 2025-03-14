@@ -12,7 +12,7 @@ export class Environment {
     const grassTexture = textureLoader.load("./assets/grass_2.jpg", () => {
       grassTexture.wrapS = THREE.RepeatWrapping;
       grassTexture.wrapT = THREE.RepeatWrapping;
-      grassTexture.repeat.set(5, 35);
+      grassTexture.repeat.set(10, 70);
     });
 
     // Forest floor texture for the wider area
@@ -21,7 +21,7 @@ export class Environment {
       () => {
         forestFloorTexture.wrapS = THREE.RepeatWrapping;
         forestFloorTexture.wrapT = THREE.RepeatWrapping;
-        forestFloorTexture.repeat.set(20, 100);
+        forestFloorTexture.repeat.set(40, 200);
       }
     );
 
@@ -39,7 +39,7 @@ export class Environment {
     this.group.add(this.plane);
 
     // Wider forest floor
-    const forestFloorGeometry = new THREE.PlaneGeometry(100, 300);
+    const forestFloorGeometry = new THREE.PlaneGeometry(200, 400);
     const forestFloorMaterial = new THREE.MeshStandardMaterial({
       map: forestFloorTexture,
       side: THREE.DoubleSide,
@@ -47,7 +47,7 @@ export class Environment {
 
     this.forestFloor = new THREE.Mesh(forestFloorGeometry, forestFloorMaterial);
     this.forestFloor.rotation.x = -Math.PI / 2;
-    this.forestFloor.position.y = -0.1; // Slightly below the main track
+    this.forestFloor.position.y = -0.1;
     this.forestFloor.position.z = -100;
     this.group.add(this.forestFloor);
 
@@ -74,18 +74,33 @@ export class Environment {
 
   createForest() {
     // Create trees on both sides of the track
-    for (let z = -100; z < 100; z += 10) {
+    for (let z = -100; z < 100; z += 8) {
       // Left side trees
-      for (let x = -15; x < -5; x += 3) {
+      for (let x = -15; x < -5; x += 2.5) {
         this.createTree(
           x + (Math.random() - 0.5) * 2,
-          z + (Math.random() - 0.5) * 5
+          z + (Math.random() - 0.5) * 4
         );
       }
       // Right side trees
-      for (let x = 5; x < 15; x += 3) {
+      for (let x = 5; x < 15; x += 2.5) {
         this.createTree(
           x + (Math.random() - 0.5) * 2,
+          z + (Math.random() - 0.5) * 4
+        );
+      }
+
+      // Background trees - left side
+      for (let x = -40; x < -15; x += 3) {
+        this.createTree(
+          x + (Math.random() - 0.5) * 3,
+          z + (Math.random() - 0.5) * 5
+        );
+      }
+      // Background trees - right side
+      for (let x = 15; x < 40; x += 3) {
+        this.createTree(
+          x + (Math.random() - 0.5) * 3,
           z + (Math.random() - 0.5) * 5
         );
       }
@@ -98,7 +113,11 @@ export class Environment {
     tree.position.set(x, 0, z);
     // Random rotation and scale variation
     tree.rotation.y = Math.random() * Math.PI * 2;
-    const scale = 0.2 + Math.random() * 0.15;
+    // Larger scale variation for background trees
+    const scale =
+      x > 15 || x < -15
+        ? 0.15 + Math.random() * 0.2 // Background trees
+        : 0.2 + Math.random() * 0.15; // Foreground trees
     tree.scale.set(scale, scale, scale);
     this.scene.add(tree);
     this.trees.push(tree);

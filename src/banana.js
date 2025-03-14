@@ -53,6 +53,27 @@ export class BananaManager {
     return Math.max(min, Math.min(max, value));
   }
 
+  // Check if a position would overlap with any obstacles
+  checkCollisionWithObstacles(x, z) {
+    const obstacles = this.scene.children.filter(
+      (child) => child.name === "rock" || child.name === "banana_tree"
+    );
+
+    for (const obstacle of obstacles) {
+      const dx = Math.abs(obstacle.position.x - x);
+      const dz = Math.abs(obstacle.position.z - z);
+
+      // Define safe distances for different obstacle types
+      const safeDistanceX = obstacle.name === "rock" ? 1.5 : 2;
+      const safeDistanceZ = obstacle.name === "rock" ? 1.5 : 2;
+
+      if (dx < safeDistanceX && dz < safeDistanceZ) {
+        return true; // Collision detected
+      }
+    }
+    return false; // No collision
+  }
+
   spawnBananaPath() {
     if (!this.model) return;
 
@@ -67,19 +88,22 @@ export class BananaManager {
       nextLane = this.randomChoice(potentialLanes);
     }
 
-    const banana = this.model.clone();
-    banana.position.set(nextLane, nextY, nextZ);
+    // Check for collisions before spawning
+    if (!this.checkCollisionWithObstacles(nextLane, nextZ)) {
+      const banana = this.model.clone();
+      banana.position.set(nextLane, nextY, nextZ);
 
-    // Simple rotation data - no complex animation
-    banana.userData = {
-      rotationSpeed: 0.02,
-    };
+      // Simple rotation data - no complex animation
+      banana.userData = {
+        rotationSpeed: 0.02,
+      };
 
-    this.scene.add(banana);
-    this.bananas.push(banana);
+      this.scene.add(banana);
+      this.bananas.push(banana);
 
-    this.lastLane = nextLane;
-    this.lastZ = nextZ;
+      this.lastLane = nextLane;
+      this.lastZ = nextZ;
+    }
   }
 
   update(monkey, score) {
