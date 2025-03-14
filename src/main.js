@@ -56,26 +56,22 @@ function init() {
 
   environment = new Environment(scene, loadingManager);
   monkey = new Monkey(scene, loadingManager);
-  
+
   // Initialize score object first so it can be passed to other components
   score = { value: 0 };
-  
+
   bananas = new BananaManager(scene, loadingManager);
   obstacles = new ObstacleManager(scene, loadingManager);
   // Pass score object to VineManager
   vines = new VineManager(scene, score);
-  
+
   // Initialize weather system
   weather = new WeatherManager(scene);
-  
+
   // Connect weather and monkey for sliding during rain
   weather.setMonkey(monkey);
 
   gameRunning = false;
-
-  document
-    .getElementById("restart-button")
-    .addEventListener("click", restartGame);
 
   animate();
 }
@@ -94,7 +90,7 @@ function animate() {
   obstacles.update(monkey, scene, stopGame);
   vines.update(monkey);
   environment.update();
-  
+
   // Update weather effects
   weather.update();
 
@@ -110,11 +106,34 @@ function stopGame() {
   gameRunning = false;
   document.getElementById("game-over").style.display = "block";
   backgroundMusic.pause();
+
+  // Re-attach event listener when game over screen is shown
+  const restartBtn = document.getElementById("restart-button");
+  if (restartBtn) {
+    restartBtn.onclick = () => {
+      console.log("Restart clicked");
+      backgroundMusic.play();
+      window.location.reload();
+    };
+  }
 }
 
 function restartGame() {
+  console.log("Restart function called");
   backgroundMusic.play();
-  location.reload();
+  window.location.reload();
 }
 
-window.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => {
+  init();
+
+  // Add event listener to restart button
+  const restartBtn = document.getElementById("restart-button");
+  if (restartBtn) {
+    restartBtn.onclick = () => {
+      console.log("Restart clicked");
+      backgroundMusic.play();
+      window.location.reload();
+    };
+  }
+});
